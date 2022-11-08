@@ -1,0 +1,26 @@
+jpa:
+  default:
+    reactive: true
+    entity-scan:
+      packages: com.tolamearth.integration.core.assets
+    properties:
+      hibernate:
+        show-sql: true
+        connection:
+          db-type: postgres
+        hbm2ddl:
+          auto: create-drop
+test-resources:
+  containers:
+    pubsub-emulator:
+      image-name: thekevjames/gcloud-pubsub-emulator:latest
+      hostnames:
+        - pubsub.host
+      exposed-ports:
+        - pubsub.port: 8681
+        - pubsub.subscription.port: 8682
+      env:
+        - PUBSUB_PROJECT1: hem-integration-services,pub_nft_marketplace_state:pub_nft_marketplace_state_subscription,nft_details:nft_details_listener,nft_marketplace_state,nft_general_ledger_state
+pubsub:
+  emulator:
+    host: ${pubsub.host}:${pubsub.port}

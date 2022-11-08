@@ -1,0 +1,6 @@
+applicationType: default
+defaultPackage: com.tolamearth
+testFramework: junit
+sourceLanguage: java
+buildTool: gradle
+features: [annotation-api, app-name, data, data-r2dbc, gcp-pubsub, github-workflow-docker-registry, gradle, h2, http-client, java, java-application, junit, logback, micronaut-build, netty-server, r2dbc, readme, serialization-jackson, shade, test-resources, yaml]

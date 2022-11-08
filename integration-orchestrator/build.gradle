@@ -1,0 +1,103 @@
+
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("io.spring.javaformat:spring-javaformat-gradle-plugin:0.0.35")
+    }
+}
+
+plugins {
+    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("io.micronaut.application") version "3.6.0"
+    id("io.micronaut.test-resources") version "3.6.0"
+    id "com.google.cloud.artifactregistry.gradle-plugin" version "2.1.5"
+}
+
+apply plugin: 'io.spring.javaformat'
+
+group = "com.tolamearth"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    implementation project(':message-schemas')
+    implementation 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor("org.projectlombok:lombok")
+    annotationProcessor("io.micronaut.data:micronaut-data-processor")
+    annotationProcessor("io.micronaut:micronaut-http-validation")
+
+    implementation("io.micronaut:micronaut-http-client")
+    implementation("io.micronaut.reactor:micronaut-reactor")
+    implementation("io.micronaut.data:micronaut-data-hibernate-reactive")
+    implementation("io.micronaut.data:micronaut-data-hibernate-jpa")
+    implementation("io.vertx:vertx-pg-client")
+    implementation("com.ongres.scram:client:2.1")
+    implementation("io.micronaut.gcp:micronaut-gcp-pubsub")
+    implementation("io.micronaut:micronaut-jackson-databind")
+    implementation("io.micronaut.grpc:micronaut-protobuff-support")
+    implementation("jakarta.annotation:jakarta.annotation-api")
+    implementation("io.micronaut:micronaut-validation")
+    implementation ('com.hedera.hashgraph:sdk-full:2.17.4'){
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
+    compileOnly("org.projectlombok:lombok")
+
+    runtimeOnly("org.postgresql:postgresql")
+    runtimeOnly("ch.qos.logback:logback-classic")
+    implementation("io.micronaut:micronaut-validation")
+
+    testImplementation("io.micronaut.test:micronaut-test-junit5")
+    testImplementation 'org.mockito:mockito-core:4.8.0'
+    testImplementation 'io.projectreactor:reactor-test:3.4.22'
+    testImplementation 'org.mockito:mockito-inline:4.8.0'
+
+}
+
+application {
+    mainClass.set("com.tolamearth.Application")
+}
+java {
+    sourceCompatibility = JavaVersion.toVersion("17")
+    targetCompatibility = JavaVersion.toVersion("17")
+}
+
+tasks {
+    dockerBuild {
+        images = ["us-central1-docker.pkg.dev/armm-sandbox/hem-armm/$project.name:latest"]
+    }
+
+    dockerBuildNative {
+        images = ["us-central1-docker.pkg.dev/armm-sandbox/hem-armm/$project.name-native:mvp-oss"]
+    }
+
+    dockerfile {
+        args("-Dmicronaut.environments=docker")
+        baseImage = "amazoncorretto:17"
+    }
+}
+
+graalvmNative.toolchainDetection = false
+micronaut {
+    runtime("netty")
+    testRuntime("junit5")
+    testResources {
+        version = "1.1.2"
+        additionalModules.add(HIBERNATE_REACTIVE_POSTGRESQL)
+    }
+    processing {
+        incremental(true)
+        annotations("com.tolamearth.*")
+    }
+}
+
+
+test {
+    useJUnitPlatform()
+}
+

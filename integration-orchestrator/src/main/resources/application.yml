@@ -1,0 +1,35 @@
+micronaut:
+  application:
+    name: integrationOrchestrator
+  executors:
+    scheduled:
+      type: scheduled
+      core-pool-size: 30
+
+netty:
+  default:
+    allocator:
+      max-order: 3
+gcp:
+  project-id: hem-integration-services
+
+ledger-works-api-key: ${LEDGER_WORKS_API_KEY}
+ledger-works-url: https://${HEDERA_NETWORK:testnet}.mirror.lworks.io/api/v1
+esg-url: https://${HEDERA_NETWORK:testnet}.esg.api.lworks.io/api/v1
+
+api:
+  integration-api-version: "/integration/v1"
+  hem-marketplace-api-version: "/hem/v1"
+  hem-marketplace-client-url: ${API_HEM_MARKETPLACE_CLIENT_URL:"http://localhost:7070"}
+
+hedera: # These configs can be generated using scripts in the hem smart contracts repo. The operator ID and Private key need to match the account where the smart contracts have been deployed.
+  network: ${HEDERA_NETWORK:testnet}
+  adminOperatorId: ${ADMIN_OPERATOR_ID:0.0.48527130}
+  adminPrivateKey: ${ADMIN_PRIVATE_KEY}
+  operatorId: ${BUYER_OPERATOR_ID:0.0.48527137}
+  privateKey: ${BUYER_PRIVATE_KEY}
+  offsetsContractId: ${HEM_OFFSETS_CONTRACT_ID:0.0.48594607}
+  gasAmount: 1_000_000
+token-discovery:
+  poll-interval: ${TOKEN_DISCOVERY_POLL_INTERVAL:2s}
+  token-ids: ["0.0.48243577"]

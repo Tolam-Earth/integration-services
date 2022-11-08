@@ -1,0 +1,66 @@
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+
+option java_package = "com.tolamearth.integration.armm";
+option java_multiple_files = true;
+option java_outer_classname = "ArmmMessage";
+
+/*
+    These are messages published by the Integration Service to PubSub topics for the ARMM to consume.s
+*/
+
+message ArmmEvent {
+    enum EventType { //Types of transactions from Hedera
+        MINTED = 0;
+        LISTED = 1;
+        PURCHASED = 2;
+        UNLISTED = 3;
+        RETIRED = 4;
+        RETRACTED = 5;
+        TRANSFERRED = 6;
+        BURNED = 7;
+    }
+
+    message NftId {
+        string tokenId = 1;         // Token ID in the format shard.realm.num             
+        string serialNumber = 2;    // Serial Number
+    }
+
+    message TokenDetail {
+        string owner = 1;   // Logical asset owner
+        string transactionMemo = 2; // Hedera's Transaction memo (free form text field, used for nothing in MMP)
+        string projectCategory = 3; // This is a free-form text field with known options including: RENEW_ENERGY (Renewable Energy), WASTE_MGMT (Waste Management), FOREST_CONSERV (Forestry and Conservation), and COMM_ENRGY_EFF (Community Based Energy Efficiency).
+        string projectType = 4; // This is a free-form text field with known options including: SOLAR (Solar), WIND (Wind), EMM_RED (Emissions Reduction), EFF_REFOR (Afforestation/Reforestation), AGG_LAND_MGMT (Agriculture Land Management).
+        optional uint64 quality = 5;  
+        optional uint64 vintageYear = 6;    // This is the vintage of the project.
+        string country = 7; // ISO 3166 Alpha-3 country code standard (https://www.iso.org/obp/ui/#searchISO) e.g. The United States is represented as USA.
+        string deviceId = 8;    // Unique identifier of device that's connect to the carbon offset generator.
+        string guardianId = 9;  // Unique identifier of the guardian that minted the project from which the NFT was generated.
+        string firstSubdivision = 10;   // Code is based on the two-letter code element from ISO 3166-1 followed by a separator and up to three alphanumeric characters. The characters after the separator cannot be used on their own to denote a subdivision, they must be preceded by the alpha-2 country code. For example – ID-RI is the Riau province of Indonesia and NG-RI is the Rivers province in Nigeria https://www.iso.org/glossary-for-iso-3166.html.
+    }
+
+    message GeneralTokenState {
+        string oldOwner = 1;
+        string newOwner = 2;
+    }
+
+    message TokenState {
+        string owner = 1;   // This is the owner of the NFT as of the transaction_time and may not be the minting owner
+        uint64 listingPrice = 2;   // The current listing price (USD Cents) - set for both LISTED and PURCHASED events
+        uint64 purchasePrice = 3;  // The current purchase price (USD Cents)
+    }
+
+    message Transaction {
+        EventType eventType = 1;
+        NftId nftId = 2;
+        string transactionId = 3;   // This is the Hedera transaction ID when the NFT was created. Format: "payer_account_id@seconds.nanoseconds". e.g. "0.0.9401@1602138343.335616988". flags like ?scheduled or child transaction indicators /1 may also be appended. https://docs.hedera.com/guides/docs/sdks/transactions/transaction-id
+        google.protobuf.Timestamp transactionTime = 4;  // Topic's transaction time
+        oneof details {
+            TokenDetail tokenDetail = 5;
+            GeneralTokenState generalTokenState = 6;
+            TokenState tokenState = 7;
+        }
+    }
+
+    repeated Transaction transactions = 1;
+}

@@ -1,0 +1,35 @@
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+
+option java_package = "com.tolamearth.integration.marketplace";
+option java_multiple_files = true;
+option java_outer_classname = "MarketplaceMessage";
+
+/*
+    These are messages published by the Marketplace to PubSub topics for the Integration Service to consume.
+*/
+
+message MarketplaceEvent {
+    enum EventType {
+        LISTED = 0;
+        PURCHASED = 1;
+    }
+
+    message NftId {
+        string tokenId = 1;         // Token ID in the format shard.realm.num             
+        string serialNumber = 2;    // Serial Number
+    }
+
+    message Transaction {
+        NftId nftId = 1;
+        string transactionId = 2;   // Hedera Transaction Id
+        string owner = 3;   // Logical asset owner; Hedera ID (shard.realm.num)
+        uint64 listPrice = 4;   // Price in USD cents; Set for event type LIST and PURCHASE
+        uint64 purchasePrice = 5;   // Price in USD cents; Only set for msg_type PURCHASE
+        google.protobuf.Timestamp transactionTime = 6;  // Hedera transaction timestamp; https://docs.hedera.com/guides/docs/hedera-api/miscellaneous/timestamp
+    } 
+
+    EventType eventType = 1;
+    repeated Transaction transactions = 2;
+}
+

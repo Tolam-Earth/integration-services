@@ -1,0 +1,57 @@
+plugins {
+    id "java"
+    id("com.google.protobuf") version "0.8.19"
+    id "maven-publish"
+    id "com.google.cloud.artifactregistry.gradle-plugin" version "2.1.5"
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId 'com.tolamearth'
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url "artifactregistry://us-central1-maven.pkg.dev/armm-sandbox/oci-maven"
+        }
+    }
+}
+
+dependencies {
+    implementation("com.google.protobuf:protobuf-java:3.21.5")
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs 'build/generated/source/proto/main/grpc'
+            srcDirs 'build/generated/source/proto/main/java'
+        }
+    }
+}
+
+protobuf {
+    protoc { artifact = "com.google.protobuf:protoc:3.20.1" }
+    plugins {
+        grpc { artifact = "io.grpc:protoc-gen-grpc-java:1.46.0" }
+    }
+    generateProtoTasks {
+        ofSourceSet('main').configureEach {
+            plugins {
+                // Apply the "grpc" plugin whose spec is defined above, without
+                // options.  Note the braces cannot be omitted, otherwise the
+                // plugin will not be added. This is because of the implicit way
+                // NamedDomainObjectContainer binds the methods.
+                grpc { }
+            }
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
+}

@@ -1,0 +1,19 @@
+jpa:
+  default:
+    reactive: true
+    entity-scan:
+      packages: com.tolamearth.integration.core.assets
+    properties:
+      hibernate:
+        show-sql: true
+        connection:
+          url: jdbc:postgresql://database:5432/postgres?ApplicationName=integration
+          db-type: postgres
+          username: armm
+          password: armm
+        hbm2ddl:
+          auto: create-drop
+pubsub:
+  emulator:
+    host: pubsub:8681
+esg-url: https://${HEDERA_NETWORK:testnet}.esg.api.lworks.io/api/v1
