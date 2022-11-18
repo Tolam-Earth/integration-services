@@ -1,22 +1,7 @@
 plugins {
     id "java"
     id("com.google.protobuf") version "0.8.19"
-    id "maven-publish"
     id "com.google.cloud.artifactregistry.gradle-plugin" version "2.1.5"
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            groupId 'com.tolamearth'
-            from components.java
-        }
-    }
-    repositories {
-        maven {
-            url "artifactregistry://us-central1-maven.pkg.dev/armm-sandbox/oci-maven"
-        }
-    }
 }
 
 dependencies {

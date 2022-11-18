@@ -69,11 +69,11 @@ java {
 
 tasks {
     dockerBuild {
-        images = ["us-central1-docker.pkg.dev/armm-sandbox/hem-armm/$project.name:latest"]
+        images = ["$project.name:latest"]
     }
 
     dockerBuildNative {
-        images = ["us-central1-docker.pkg.dev/armm-sandbox/hem-armm/$project.name-native:mvp-oss"]
+        images = ["$project.name-native:latest"]
     }
 
     dockerfile {
