@@ -5,7 +5,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("io.spring.javaformat:spring-javaformat-gradle-plugin:0.0.35")
+        classpath("com.bmuschko:gradle-docker-plugin:7.3.0")
     }
 }
 
