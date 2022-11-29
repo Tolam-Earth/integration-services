@@ -22,6 +22,7 @@ import com.tolamearth.integration.api.ErrorCode;
 import com.tolamearth.integration.ledgerworks.discovery.TokenDiscoveryScheduler;
 import com.tolamearth.integration.marketplace.buyer.BuyerService;
 import io.micronaut.context.annotation.Property;
+import io.micronaut.context.annotation.Value;
 import io.micronaut.core.type.Argument;
 import io.micronaut.http.HttpHeaders;
 import io.micronaut.http.HttpRequest;
@@ -73,7 +74,8 @@ class OffsetPurchaseControllerTest {
 
 	final String integrationApiVersion = "/integration/v1";
 
-	final String ACCOUNT_ID = "0.0.1234";
+	@Value("${hedera.operatorId}")
+	String ACCOUNT_ID;
 
 	final String TOKEN_ID = "0.0.2345";
 
@@ -84,13 +86,13 @@ class OffsetPurchaseControllerTest {
 	final String LOCATION = UriBuilder.of(integrationApiVersion).path("/offsets").path(TOKEN_ID + "," + SERIAL_NUMBER)
 			.path("transactions").build().toString();
 
-	final OffsetPurchaseRequest request = new OffsetPurchaseRequest(ACCOUNT_ID,
-			new Asset(new ApiNftId(TOKEN_ID, SERIAL_NUMBER), PRICE));
-
 	final URI uri = UriBuilder.of(integrationApiVersion).path(OffsetPurchaseController.BUYER).build();
 
 	@Test
 	void purchaseOffset() throws IOException {
+		OffsetPurchaseRequest request = new OffsetPurchaseRequest(ACCOUNT_ID,
+				new Asset(new ApiNftId(TOKEN_ID, SERIAL_NUMBER), PRICE));
+
 		try (BlockingHttpClient blockingClient = client.toBlocking()) {
 			HttpResponse<OffsetPurchaseResponse> response = blockingClient.exchange(HttpRequest.POST(uri, request),
 					OffsetPurchaseResponse.class);

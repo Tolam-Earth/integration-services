@@ -45,6 +45,9 @@ public class OffsetPurchaseController {
 	@Value("${api.integration-api-version}")
 	private String integrationApiVersion;
 
+	@Value("${hedera.operatorId}")
+	private String buyerAccountId;
+
 	private final BuyerService buyerService;
 
 	@Post(BUYER)
@@ -56,6 +59,8 @@ public class OffsetPurchaseController {
 
 		URI locationHeader = UriBuilder.of(integrationApiVersion).path("/offsets")
 				.path(nftId.getTokenId() + "," + nftId.getSerialNumber()).path("transactions").build();
+
+		request.setAccountId(buyerAccountId);
 
 		buyerService.makeAsyncPurchase(request);
 
