@@ -1,9 +1,6 @@
 allprojects {
     repositories {
         mavenCentral()
-        maven {
-            url "artifactregistry://us-central1-maven.pkg.dev/armm-sandbox/oci-maven"
-        }
     }
 }
 
