@@ -16,6 +16,9 @@ services:
       - "8089:8080"
     depends_on:
       - database
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
 
   database:
     image: us-central1-docker.pkg.dev/armm-sandbox/hem-armm/hem-postgres:latest
@@ -32,6 +35,9 @@ services:
       - database_data:/var/lib/postgresql/data
     logging: *armm-logging
     command: ["postgres", "-c", "log_statement=all", "-c", "log_destination=stderr"]
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
 
 volumes:
   database_data:
